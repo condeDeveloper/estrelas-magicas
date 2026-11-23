@@ -1,0 +1,51 @@
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  testes:
+    runs-on: ${{ matrix.so }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        so: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: "testes"
+        run: dotnet test testes/EstrelasMagicas.Testes/EstrelasMagicas.Testes.csproj -c Release --nologo -v q --filter "Category!=Pesado"
+
+      - name: "estrelas de 5 a 10 pontas, pela busca e pelo juiz"
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- tabela
+
+      - name: "classes por giro, espelho e complemento"
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- classes
+
+      - name: "a estrela de 5 pontas com dez numeros escolhidos"
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- pentagrama
+
+      - name: "achar uma contra achar todas"
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- primeira
+
+  pesado:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: "o juiz na estrela de 8 pontas"
+        run: dotnet test testes/EstrelasMagicas.Testes/EstrelasMagicas.Testes.csproj -c Release --nologo -v q --filter "Category=Pesado"
